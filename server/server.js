@@ -1,10 +1,12 @@
 import express from "express";
 import dotenv from "dotenv";
+import connectDB from "./config/db.js";
 
 // Products will ultimately come from MongoDB. This is just a placeholder with dummy data for now.
 import products from "./data/products.js";
 
 dotenv.config();
+connectDB();
 const app = express();
 
 // Basic Routes
