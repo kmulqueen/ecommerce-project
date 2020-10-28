@@ -1,25 +1,15 @@
-import express from "express";
-import dotenv from "dotenv";
-import connectDB from "./config/db.js";
+const express = require("express");
+const dotenv = require("dotenv");
+const connectDB = require("./config/db");
+const routes = require("./routes");
 
-// Products will ultimately come from MongoDB. This is just a placeholder with dummy data for now.
-import products from "./data/products.js";
-
+// Initialize env, app, and DB connection
 dotenv.config();
 connectDB();
 const app = express();
 
-// Basic Routes
-app.get("/", (req, res) => {
-  res.send("api is running");
-});
-app.get("/api/products", (req, res) => {
-  res.json(products);
-});
-app.get("/api/products/:id", (req, res) => {
-  const product = products.find((prod) => prod._id === req.params.id);
-  res.json(product);
-});
+// Add routes, both API and view
+app.use(routes);
 
 // Run Server
 const PORT = process.env.PORT || 5000;
