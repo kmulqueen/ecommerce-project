@@ -15,9 +15,10 @@ import Rating from "../../components/Rating";
 import Splash from "../../components/Splash";
 import Message from "../../components/Message";
 
-const ProductPage = ({ match }) => {
+const ProductPage = ({ match, history }) => {
   // State for adjusting quantity of product to add to cart
-  const [quantity, setQuantity] = useState(0);
+  const [quantity, setQuantity] = useState(1);
+
   // Product details state from redux
   const dispatch = useDispatch();
   const productDetails = useSelector((state) => state.productDetails);
@@ -26,6 +27,10 @@ const ProductPage = ({ match }) => {
   useEffect(() => {
     dispatch(listProductDetils(match.params.id));
   }, [match, dispatch]);
+
+  const cartSubmit = () => {
+    history.push(`/cart/${match.params.id}?qty=${quantity}`);
+  };
   return (
     <>
       <Link to="/" className="btn btn-dark my-3">
@@ -97,6 +102,7 @@ const ProductPage = ({ match }) => {
                     className="btn-block"
                     type="button"
                     disabled={product.numInStock === 0}
+                    onClick={cartSubmit}
                   >
                     Add To Cart
                   </Button>

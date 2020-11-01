@@ -5,13 +5,23 @@ import {
   productListReducer,
   productDetailsReducer,
 } from "./reducers/productReducers";
+import { cartReducer } from "./reducers/cartReducers";
 
 const reducer = combineReducers({
   productList: productListReducer,
   productDetails: productDetailsReducer,
+  cart: cartReducer,
 });
 
-const initialState = {};
+// Retrieve any existing cart items from local storage (if any exist)
+const cartItemsFromStorage = localStorage.getItem("cartItems")
+  ? JSON.parse(localStorage.getItem("cartItems"))
+  : [];
+
+// Set initial state to include any pre-existing cart items from local storage (if any exist)
+const initialState = {
+  cart: { cartItems: cartItemsFromStorage },
+};
 const middleware = [thunk];
 
 const store = createStore(
