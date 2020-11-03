@@ -2,6 +2,9 @@ const router = require("express").Router();
 const userController = require("../../controllers/userController");
 const protect = require("../../middleware/authMiddleware");
 
+// Matches with "/api/users"
+router.route("/").post(userController.registerUser);
+
 // Matches with "/api/users/login"
 router.route("/login").post(userController.authenticateUser);
 

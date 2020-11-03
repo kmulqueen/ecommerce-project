@@ -37,4 +37,33 @@ module.exports = {
       res.status(404).json({ message: "User not found." });
     }
   },
+  registerUser: async function (req, res) {
+    const { name, email, password } = req.body;
+
+    // Check if email is already registered
+    const userExists = await db.User.findOne({ email });
+
+    if (userExists) {
+      res.status(400).json({ message: "Email already registered." });
+    }
+
+    // Create new user if email isn't already registered
+    const user = await db.User.create({
+      name,
+      email,
+      password,
+    });
+
+    if (user) {
+      res.status(201).json({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        isAdmin: user.isAdmin,
+        token: generateToken(user._id),
+      });
+    } else {
+      res.status(400).json({ message: "Invalid user data." });
+    }
+  },
 };
