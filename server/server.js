@@ -9,6 +9,9 @@ dotenv.config();
 connectDB();
 const app = express();
 
+// Allow JSON data to be accepted in request body
+app.use(express.json());
+
 // Add routes, both API and view
 app.use(routes);
 
