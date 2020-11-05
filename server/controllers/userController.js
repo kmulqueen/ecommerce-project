@@ -40,30 +40,44 @@ module.exports = {
   registerUser: async function (req, res) {
     const { name, email, password } = req.body;
 
-    // Check if email is already registered
-    const userExists = await db.User.findOne({ email });
-
-    if (userExists) {
-      res.status(400).json({ message: "Email already registered." });
-    }
-
-    // Create new user if email isn't already registered
-    const user = await db.User.create({
-      name,
-      email,
-      password,
-    });
-
-    if (user) {
-      res.status(201).json({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        isAdmin: user.isAdmin,
-        token: generateToken(user._id),
-      });
+    // Check that name, email, and password are not empty
+    if (
+      name === "" ||
+      name === null ||
+      email === "" ||
+      email === null ||
+      password === "" ||
+      password === null
+    ) {
+      res
+        .status(400)
+        .json({ message: "Please ensure all fields are filled out." });
     } else {
-      res.status(400).json({ message: "Invalid user data." });
+      // Check if email is already registered
+      const userExists = await db.User.findOne({ email });
+
+      if (userExists) {
+        res.status(400).json({ message: "Email already registered." });
+      } else {
+        // Create new user if email isn't already registered
+        const user = await db.User.create({
+          name,
+          email,
+          password,
+        });
+
+        if (user) {
+          res.status(201).json({
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            isAdmin: user.isAdmin,
+            token: generateToken(user._id),
+          });
+        } else {
+          res.status(400).json({ message: "Invalid user data." });
+        }
+      }
     }
   },
 };
