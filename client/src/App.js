@@ -6,6 +6,7 @@ import RegisterPage from "./pages/RegisterPage";
 import HomePage from "./pages/HomePage";
 import ProductPage from "./pages/ProductPage";
 import CartPage from "./pages/CartPage";
+import ProfilePage from "./pages/ProfilePage";
 import { Container } from "react-bootstrap";
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
         <Container>
           <Route path="/register" component={RegisterPage} />
           <Route path="/login" component={LoginPage} />
+          <Route path="/profile" component={ProfilePage} />
           <Route path="/product/:id" component={ProductPage} />
           <Route path="/cart/:id?" component={CartPage} />
           <Route path="/" exact component={HomePage} />
