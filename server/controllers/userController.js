@@ -37,6 +37,32 @@ module.exports = {
       res.status(404).json({ message: "User not found." });
     }
   },
+  updateUserProfile: async function (req, res) {
+    // Try to find user by ID
+    const user = await db.User.findById(req.user._id);
+
+    // Check for user
+    if (user) {
+      // Update fields if they were updated
+      user.name = req.body.name || user.name;
+      user.email = req.body.email || user.email;
+      if (req.body.password) {
+        user.password = req.body.password;
+      }
+
+      const updatedUser = await user.save();
+
+      res.json({
+        _id: updatedUser._id,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        isAdmin: updatedUser.isAdmin,
+        token: generateToken(updatedUser._id),
+      });
+    } else {
+      res.status(404).json({ message: "User not found." });
+    }
+  },
   registerUser: async function (req, res) {
     const { name, email, password } = req.body;
 

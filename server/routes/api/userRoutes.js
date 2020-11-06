@@ -10,5 +10,6 @@ router.route("/login").post(userController.authenticateUser);
 
 // Matches with "/api/users/profile" - PROTECTED ROUTE
 router.route("/profile").get(protect, userController.getUserProfile);
+router.route("/profile").put(protect, userController.updateUserProfile);
 
 module.exports = router;
