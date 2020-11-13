@@ -1,14 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { Row, Col, Button, ListGroup, Image, Card } from "react-bootstrap";
 import Message from "../../components/Message";
 import CheckoutSteps from "../../components/CheckoutSteps";
+import { createOrder } from "../../actions/orderActions";
 
-const PlaceOrderPage = () => {
+const PlaceOrderPage = ({ history }) => {
   const dispatch = useDispatch();
-
   const cart = useSelector((state) => state.cart);
+  const orderCreate = useSelector((state) => state.orderCreate);
+
+  const { order, success, error } = orderCreate;
 
   // Calculate prices
   cart.itemsPrice = addDecimals(
@@ -20,13 +23,28 @@ const PlaceOrderPage = () => {
     Number(cart.itemsPrice) + Number(cart.shippingPrice) + Number(cart.taxPrice)
   );
 
+  useEffect(() => {
+    if (success) {
+      history.push(`/order/${order._id}`);
+    }
+  }, [history, success, order]);
+
   // Handles missing 0 in the hundredth decimal place
   function addDecimals(num) {
     return (Math.round(num * 100) / 100).toFixed(2);
   }
 
   const placeOrderHandler = () => {
-    console.log("Order placed");
+    const newOrder = {
+      orderItems: cart.cartItems,
+      shippingAddress: cart.shippingAddress,
+      paymentMethod: cart.paymentMethod,
+      itemsPrice: cart.itemsPrice,
+      shippingPrice: cart.shippingPrice,
+      taxPrice: cart.taxPrice,
+      totalPrice: cart.totalPrice,
+    };
+    dispatch(createOrder(newOrder));
   };
   return (
     <>
@@ -113,6 +131,9 @@ const PlaceOrderPage = () => {
                 </Row>
               </ListGroup.Item>
               <ListGroup.Item>
+                <ListGroup.Item>
+                  {error && <Message variant="danger">{error}</Message>}
+                </ListGroup.Item>
                 <Button
                   type="button"
                   className="btn-block"
