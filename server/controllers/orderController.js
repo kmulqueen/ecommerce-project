@@ -32,4 +32,17 @@ module.exports = {
       res.status(201).json({ message: "Order created!", createdOrder });
     }
   },
+  getOrderById: async function (req, res) {
+    // Find order by ID. Populate the name & email from the user.
+    const order = await db.Order.findById(req.params.id).populate(
+      "user",
+      "name email"
+    );
+
+    if (order) {
+      res.json(order);
+    } else {
+      res.status(404).json({ message: "Order not found." });
+    }
+  },
 };
