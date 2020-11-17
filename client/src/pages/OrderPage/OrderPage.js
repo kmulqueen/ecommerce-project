@@ -29,8 +29,10 @@ const OrderPage = ({ match }) => {
   }
 
   useEffect(() => {
-    dispatch(getOrderDetails(orderID));
-  }, []);
+    if (!order || order._id !== orderID) {
+      dispatch(getOrderDetails(orderID));
+    }
+  }, [order, orderID, dispatch]);
 
   return loading ? (
     <Splash />
