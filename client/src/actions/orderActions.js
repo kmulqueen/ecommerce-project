@@ -115,3 +115,7 @@ export const payOrder = (orderID, paymentResult) => async (
     });
   }
 };
+
+export const orderPayReset = () => (dispatch) => {
+  dispatch({ type: ORDER_PAY_RESET });
+};

@@ -1,24 +1,34 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { PayPalButton } from "react-paypal-button-v2";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { Row, Col, Button, ListGroup, Image, Card } from "react-bootstrap";
 import Message from "../../components/Message";
 import Splash from "../../components/Splash";
-import { getOrderDetails } from "../../actions/orderActions";
+import {
+  getOrderDetails,
+  payOrder,
+  orderPayReset,
+} from "../../actions/orderActions";
 
 const OrderPage = ({ match }) => {
   const dispatch = useDispatch();
 
   const orderDetails = useSelector((state) => state.orderDetails);
   const { order, loading, error } = orderDetails;
+  const orderPay = useSelector((state) => state.orderPay);
+  const { loading: loadingPay, success: successPay } = orderPay;
 
   const orderID = match.params.id;
 
+  const [sdkReady, setSdkReady] = useState(false);
+
   if (!loading) {
     // Fix missng 0 in hundredths decimal place (if exists)
-    function addDecimals(num) {
+    const addDecimals = (num) => {
       return (Math.round(num * 100) / 100).toFixed(2);
-    }
+    };
 
     order.itemsPrice = addDecimals(
       order.orderItems.reduce(
@@ -29,10 +39,42 @@ const OrderPage = ({ match }) => {
   }
 
   useEffect(() => {
-    if (!order || order._id !== orderID) {
+    // Dynamically create and add PayPal script
+    const addPayPalScript = async () => {
+      // Get client id
+      const res = await axios.get("/api/config/paypal");
+      const clientID = res.data;
+      // Create script tag
+      const script = document.createElement("script");
+      script.type = "text/javascript";
+      script.src = `https://www.paypal.com/sdk/js?client-id=${clientID}`;
+      script.async = true;
+      // Once script is loaded add to document
+      script.onload = () => {
+        setSdkReady(true);
+      };
+      document.body.appendChild(script);
+    };
+
+    // If order isn't found or a successful payment has been made, get order details
+    if (!order || successPay || order._id !== orderID) {
+      // Reset pay to avoid constant refresh
+      dispatch(orderPayReset());
       dispatch(getOrderDetails(orderID));
+    } else if (!order.isPaid) {
+      // If order isn't paid, add PayPal script
+      if (!window.paypal) {
+        addPayPalScript();
+      } else {
+        setSdkReady(true);
+      }
     }
-  }, [order, orderID, dispatch]);
+  }, [order, orderID, successPay, dispatch]);
+
+  // Takes in payment result from PayPal
+  const successPaymentHandler = (paymentResult) => {
+    dispatch(payOrder(orderID, paymentResult));
+  };
 
   return loading ? (
     <Splash />
@@ -143,6 +185,19 @@ const OrderPage = ({ match }) => {
                   <Col>${order.totalPrice}</Col>
                 </Row>
               </ListGroup.Item>
+              {!order.isPaid && (
+                <ListGroup.Item>
+                  {loadingPay && <Splash />}
+                  {!sdkReady ? (
+                    <Splash />
+                  ) : (
+                    <PayPalButton
+                      amount={order.totalPrice}
+                      onSuccess={successPaymentHandler}
+                    />
+                  )}
+                </ListGroup.Item>
+              )}
             </ListGroup>
           </Card>
         </Col>

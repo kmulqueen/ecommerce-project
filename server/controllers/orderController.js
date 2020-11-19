@@ -29,7 +29,7 @@ module.exports = {
 
       const createdOrder = await order.save();
 
-      res.status(201).json({ message: "Order created!", createdOrder });
+      res.status(201).json(createdOrder);
     }
   },
   getOrderById: async function (req, res) {
