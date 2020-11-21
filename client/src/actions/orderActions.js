@@ -10,6 +10,9 @@ import {
   ORDER_PAY_SUCCESS,
   ORDER_PAY_FAIL,
   ORDER_PAY_RESET,
+  USER_ORDER_LIST_REQUEST,
+  USER_ORDER_LIST_SUCCESS,
+  USER_ORDER_LIST_FAIL,
 } from "../action_types/orderTypes";
 
 export const createOrder = (order) => async (dispatch, getState) => {
@@ -118,4 +121,35 @@ export const payOrder = (orderID, paymentResult) => async (
 
 export const orderPayReset = () => (dispatch) => {
   dispatch({ type: ORDER_PAY_RESET });
+};
+
+export const listUserOrders = () => async (dispatch, getState) => {
+  try {
+    dispatch({ type: USER_ORDER_LIST_REQUEST });
+
+    const {
+      userLogin: { userInfo },
+    } = getState();
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    };
+
+    const res = await axios.get("/api/orders/myorders", config);
+
+    dispatch({
+      type: USER_ORDER_LIST_SUCCESS,
+      payload: res.data,
+    });
+  } catch (error) {
+    dispatch({
+      type: USER_ORDER_LIST_FAIL,
+      payload:
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message,
+    });
+  }
 };

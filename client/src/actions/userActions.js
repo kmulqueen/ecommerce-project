@@ -13,7 +13,10 @@ import {
   USER_UPDATE_PROFILE_REQUEST,
   USER_UPDATE_PROFILE_SUCCESS,
   USER_UPDATE_PROFILE_FAIL,
+  USER_UPDATE_PROFILE_RESET,
+  USER_DETAILS_RESET,
 } from "../action_types/userTypes";
+import { USER_ORDER_LIST_RESET } from "../action_types/orderTypes";
 
 export const login = (email, password) => async (dispatch) => {
   try {
@@ -53,6 +56,8 @@ export const logout = () => (dispatch) => {
   localStorage.removeItem("userInfo");
   localStorage.removeItem("cartItems");
   dispatch({ type: LOGOUT_USER });
+  dispatch({ type: USER_DETAILS_RESET });
+  dispatch({ type: USER_ORDER_LIST_RESET });
   document.location.href = "/login";
 };
 
@@ -165,4 +170,8 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
           : error.message,
     });
   }
+};
+
+export const userUpdateProfileReset = () => (dispatch) => {
+  dispatch({ type: USER_UPDATE_PROFILE_RESET });
 };
