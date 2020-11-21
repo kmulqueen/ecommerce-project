@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const orderController = require("../../controllers/orderController");
-const protect = require("../../middleware/authMiddleware");
+const { protect } = require("../../middleware/authMiddleware");
 
 // POST "/api/orders" - PROTECTED ROUTE
 router.route("/").post(protect, orderController.createNewOrder);

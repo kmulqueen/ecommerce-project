@@ -106,4 +106,8 @@ module.exports = {
       }
     }
   },
+  getAllUsers: async function (req, res) {
+    const users = await db.User.find({});
+    res.json(users);
+  },
 };

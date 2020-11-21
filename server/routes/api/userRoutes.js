@@ -1,8 +1,9 @@
 const router = require("express").Router();
 const userController = require("../../controllers/userController");
-const protect = require("../../middleware/authMiddleware");
+const { protect, admin } = require("../../middleware/authMiddleware");
 
 // Matches with "/api/users"
+router.route("/").get(protect, admin, userController.getAllUsers);
 router.route("/").post(userController.registerUser);
 
 // Matches with "/api/users/login"
