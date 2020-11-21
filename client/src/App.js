@@ -11,6 +11,7 @@ import PaymentMethodPage from "./pages/PaymentMethodPage";
 import PlaceOrderPage from "./pages/PlaceOrderPage";
 import OrderPage from "./pages/OrderPage";
 import ProfilePage from "./pages/ProfilePage";
+import UserListPage from "./pages/UserListPage";
 import { Container } from "react-bootstrap";
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
           <Route path="/payment" component={PaymentMethodPage} />
           <Route path="/placeorder" component={PlaceOrderPage} />
           <Route path="/order/:id" component={OrderPage} />
+          <Route path="/admin/userlist" component={UserListPage} />
           <Route path="/" exact component={HomePage} />
         </Container>
       </main>
