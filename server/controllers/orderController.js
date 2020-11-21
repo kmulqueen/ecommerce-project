@@ -65,4 +65,14 @@ module.exports = {
       res.status(404).json({ message: "Order not found." });
     }
   },
+  getUserOrders: async function (req, res) {
+    // Find all orders associated with the logged in user
+    const orders = await db.Order.find({ user: req.user._id });
+
+    if (orders.length) {
+      res.json(orders);
+    } else {
+      res.status(404).json({ message: "No orders found." });
+    }
+  },
 };
