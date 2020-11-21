@@ -110,4 +110,14 @@ module.exports = {
     const users = await db.User.find({});
     res.json(users);
   },
+  deleteUser: async function (req, res) {
+    const user = await db.User.findById(req.params.id);
+
+    if (user) {
+      await user.remove();
+      res.json({ message: "User deleted." });
+    } else {
+      res.status(404).json({ message: "User not found." });
+    }
+  },
 };
