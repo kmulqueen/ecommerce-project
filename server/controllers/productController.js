@@ -17,4 +17,13 @@ module.exports = {
       res.status(404).json({ message: "Product not found." });
     }
   },
+  deleteById: async function (req, res) {
+    try {
+      const product = await db.Product.findById(req.params.id);
+      await product.remove();
+      res.json({ message: "Product removed" });
+    } catch (error) {
+      res.status(404).json({ message: "Product not found." });
+    }
+  },
 };

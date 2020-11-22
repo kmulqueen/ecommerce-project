@@ -4,7 +4,7 @@ import { Table, Button, Row, Col } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import Message from "../../components/Message";
 import Splash from "../../components/Splash";
-import { listProducts } from "../../actions/productActions";
+import { listProducts, deleteProduct } from "../../actions/productActions";
 
 const ProductListPage = ({ match, history }) => {
   const dispatch = useDispatch();
@@ -15,6 +15,9 @@ const ProductListPage = ({ match, history }) => {
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
 
+  const productDelete = useSelector((state) => state.productDelete);
+  const { loading: loadingDelete, success, error: errorDelete } = productDelete;
+
   useEffect(() => {
     // Check to see if user is admin
     if (userInfo && userInfo.isAdmin) {
@@ -22,7 +25,7 @@ const ProductListPage = ({ match, history }) => {
     } else {
       history.push("/login");
     }
-  }, [dispatch, history, userInfo]);
+  }, [dispatch, history, userInfo, success]);
 
   const createProductHandler = (product) => {
     console.log("product created.");
@@ -30,7 +33,7 @@ const ProductListPage = ({ match, history }) => {
 
   const deleteHandler = (id) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
-      console.log("deleted product");
+      dispatch(deleteProduct(id));
     }
   };
 
@@ -46,6 +49,8 @@ const ProductListPage = ({ match, history }) => {
           </Button>
         </Col>
       </Row>
+      {loadingDelete && <Splash />}
+      {errorDelete && <Message variant="danger">{errorDelete}</Message>}
       {loading ? (
         <Splash />
       ) : error ? (
