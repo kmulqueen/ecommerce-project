@@ -14,6 +14,8 @@ router.route("/profile").get(protect, userController.getUserProfile);
 router.route("/profile").put(protect, userController.updateUserProfile);
 
 // Matches with "/api/users/:id"
+router.route("/:id").get(protect, admin, userController.getUserByID);
+router.route("/:id").put(protect, admin, userController.updateUser);
 router.route("/:id").delete(protect, admin, userController.deleteUser);
 
 module.exports = router;
