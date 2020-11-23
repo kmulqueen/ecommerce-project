@@ -4,7 +4,12 @@ import { Table, Button, Row, Col } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import Message from "../../components/Message";
 import Splash from "../../components/Splash";
-import { listProducts, deleteProduct } from "../../actions/productActions";
+import {
+  listProducts,
+  deleteProduct,
+  createProduct,
+  createProductReset,
+} from "../../actions/productActions";
 
 const ProductListPage = ({ match, history }) => {
   const dispatch = useDispatch();
@@ -18,17 +23,30 @@ const ProductListPage = ({ match, history }) => {
   const productDelete = useSelector((state) => state.productDelete);
   const { loading: loadingDelete, success, error: errorDelete } = productDelete;
 
+  const productCreate = useSelector((state) => state.productCreate);
+  const {
+    loading: loadingCreate,
+    success: successCreate,
+    error: errorCreate,
+    product: createdProduct,
+  } = productCreate;
+
   useEffect(() => {
+    dispatch(createProductReset());
     // Check to see if user is admin
-    if (userInfo && userInfo.isAdmin) {
-      dispatch(listProducts());
-    } else {
+    if (!userInfo.isAdmin) {
       history.push("/login");
     }
-  }, [dispatch, history, userInfo, success]);
+    // Redirect to product edit if a new product has been created
+    if (successCreate) {
+      history.push(`/admin/product/${createdProduct._id}/edit`);
+    } else {
+      dispatch(listProducts());
+    }
+  }, [dispatch, history, userInfo, success, successCreate, createdProduct]);
 
-  const createProductHandler = (product) => {
-    console.log("product created.");
+  const createProductHandler = () => {
+    dispatch(createProduct());
   };
 
   const deleteHandler = (id) => {
@@ -51,6 +69,8 @@ const ProductListPage = ({ match, history }) => {
       </Row>
       {loadingDelete && <Splash />}
       {errorDelete && <Message variant="danger">{errorDelete}</Message>}
+      {loadingCreate && <Splash />}
+      {errorCreate && <Message variant="danger">{errorCreate}</Message>}
       {loading ? (
         <Splash />
       ) : error ? (

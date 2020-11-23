@@ -28,7 +28,6 @@ module.exports = {
   },
   createProduct: async function (req, res) {
     try {
-      // @TODO - DELETE SAMPLE INFO - Filled with sample info for now. WILL DELETE SAMPLE INFO
       const product = new db.Product({
         name: "Sample name",
         price: 0,
