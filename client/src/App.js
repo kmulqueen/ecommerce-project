@@ -14,6 +14,7 @@ import ProfilePage from "./pages/ProfilePage";
 import UserListPage from "./pages/UserListPage";
 import UserEditPage from "./pages/UserEditPage";
 import ProductListPage from "./pages/ProductListPage";
+import ProductEditPage from "./pages/ProductEditPage";
 import { Container } from "react-bootstrap";
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
           <Route path="/admin/userlist" component={UserListPage} />
           <Route path="/admin/user/:id/edit" component={UserEditPage} />
           <Route path="/admin/productlist" component={ProductListPage} />
+          <Route path="/admin/product/:id" component={ProductEditPage} />
           <Route path="/" exact component={HomePage} />
         </Container>
       </main>
