@@ -3,6 +3,7 @@ const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const routes = require("./routes");
 const middleware = require("./middleware/errorMiddleware");
+const path = require("path");
 
 // Initialize env, app, and DB connection
 dotenv.config();
@@ -14,6 +15,9 @@ app.use(express.json());
 
 // Add routes, both API and view
 app.use(routes);
+
+// Add uploads folder as static folder
+app.use("/uploads", express.static("uploads"));
 
 // Add error handling middleware
 app.use(middleware.notFound);
