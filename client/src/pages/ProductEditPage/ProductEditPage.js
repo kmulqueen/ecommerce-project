@@ -5,7 +5,11 @@ import { useDispatch, useSelector } from "react-redux";
 import Message from "../../components/Message";
 import Splash from "../../components/Splash";
 import FormContainer from "../../components/FormContainer";
-import { listProductDetils } from "../../actions/productActions";
+import {
+  listProductDetils,
+  updateProduct,
+  updateProductReset,
+} from "../../actions/productActions";
 
 const ProductEditPage = ({ match, history }) => {
   const productID = match.params.id;
@@ -23,25 +27,47 @@ const ProductEditPage = ({ match, history }) => {
   const productDetails = useSelector((state) => state.productDetails);
   const { loading, error, product } = productDetails;
 
+  const productUpdate = useSelector((state) => state.productUpdate);
+  const {
+    loading: loadingUpdate,
+    error: errorUpdate,
+    success: successUpdate,
+  } = productUpdate;
+
   useEffect(() => {
-    // Check for the correct product
-    if (!product.name || product._id !== productID) {
-      dispatch(listProductDetils(productID));
+    if (successUpdate) {
+      dispatch(updateProductReset());
+      history.push("/admin/productlist");
     } else {
-      // Fill fields with existing product info
-      setName(product.name);
-      setPrice(product.price);
-      setImage(product.image);
-      setBrand(product.brand);
-      setCategory(product.category);
-      setNumInStock(product.numInStock);
-      setDescription(product.description);
+      // Check for the correct product
+      if (!product.name || product._id !== productID) {
+        dispatch(listProductDetils(productID));
+      } else {
+        // Fill fields with existing product info
+        setName(product.name);
+        setPrice(product.price);
+        setImage(product.image);
+        setBrand(product.brand);
+        setCategory(product.category);
+        setNumInStock(product.numInStock);
+        setDescription(product.description);
+      }
     }
-  }, [history, dispatch, productID, product]);
+  }, [history, dispatch, productID, product, successUpdate]);
 
   const submitHandler = (e) => {
     e.preventDefault();
-    console.log("update product");
+    const updatedProduct = {
+      _id: product._id,
+      name,
+      price,
+      description,
+      brand,
+      image,
+      category,
+      numInStock,
+    };
+    dispatch(updateProduct(updatedProduct));
   };
 
   return (
@@ -51,6 +77,8 @@ const ProductEditPage = ({ match, history }) => {
       </Link>
       <FormContainer>
         <h1>Edit Product</h1>
+        {loadingUpdate && <Splash />}
+        {errorUpdate && <Message variant="danger">{errorUpdate}</Message>}
         {loading ? (
           <Splash />
         ) : error ? (
