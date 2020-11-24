@@ -71,4 +71,8 @@ module.exports = {
 
     res.json(orders);
   },
+  getAllOrders: async function (req, res) {
+    const orders = await db.Order.find({}).populate("user", "id name");
+    res.json(orders);
+  },
 };
