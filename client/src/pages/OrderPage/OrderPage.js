@@ -3,22 +3,31 @@ import axios from "axios";
 import { PayPalButton } from "react-paypal-button-v2";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { Row, Col, ListGroup, Image, Card } from "react-bootstrap";
+import { Row, Col, ListGroup, Image, Card, Button } from "react-bootstrap";
 import Message from "../../components/Message";
 import Splash from "../../components/Splash";
 import {
   getOrderDetails,
   payOrder,
   orderPayReset,
+  deliverOrder,
+  deliverOrderReset,
 } from "../../actions/orderActions";
 
-const OrderPage = ({ match }) => {
+const OrderPage = ({ match, history }) => {
   const dispatch = useDispatch();
 
   const orderDetails = useSelector((state) => state.orderDetails);
   const { order, loading, error } = orderDetails;
+
   const orderPay = useSelector((state) => state.orderPay);
   const { loading: loadingPay, success: successPay } = orderPay;
+
+  const orderDeliver = useSelector((state) => state.orderDeliver);
+  const { loading: loadingDeliver, success: successDeliver } = orderDeliver;
+
+  const userLogin = useSelector((state) => state.userLogin);
+  const { userInfo } = userLogin;
 
   const orderID = match.params.id;
 
@@ -39,6 +48,9 @@ const OrderPage = ({ match }) => {
   }
 
   useEffect(() => {
+    if (!userInfo) {
+      history.push("/login");
+    }
     // Dynamically create and add PayPal script
     const addPayPalScript = async () => {
       // Get client id
@@ -57,9 +69,10 @@ const OrderPage = ({ match }) => {
     };
 
     // If order isn't found or a successful payment has been made, get order details
-    if (!order || successPay || order._id !== orderID) {
-      // Reset pay to avoid constant refresh
+    if (!order || successPay || order._id !== orderID || successDeliver) {
+      // Reset pay and deliver to avoid constant refresh
       dispatch(orderPayReset());
+      dispatch(deliverOrderReset());
       dispatch(getOrderDetails(orderID));
     } else if (!order.isPaid) {
       // If order isn't paid, add PayPal script
@@ -69,11 +82,15 @@ const OrderPage = ({ match }) => {
         setSdkReady(true);
       }
     }
-  }, [order, orderID, successPay, dispatch]);
+  }, [order, orderID, successPay, dispatch, successDeliver, history, userInfo]);
 
   // Takes in payment result from PayPal
   const successPaymentHandler = (paymentResult) => {
     dispatch(payOrder(orderID, paymentResult));
+  };
+
+  const deliverHandler = () => {
+    dispatch(deliverOrder(order));
   };
 
   return loading ? (
@@ -198,6 +215,22 @@ const OrderPage = ({ match }) => {
                   )}
                 </ListGroup.Item>
               )}
+              {/* Show mark as delivered button if admin and order is paid but not delivered */}
+              {loadingDeliver && <Splash />}
+              {userInfo &&
+                userInfo.isAdmin &&
+                order.isPaid &&
+                !order.isDelivered && (
+                  <ListGroup.Item>
+                    <Button
+                      type="button"
+                      className="btn btn-block"
+                      onClick={deliverHandler}
+                    >
+                      Mark as Delivered
+                    </Button>
+                  </ListGroup.Item>
+                )}
             </ListGroup>
           </Card>
         </Col>

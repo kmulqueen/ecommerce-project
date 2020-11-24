@@ -75,4 +75,16 @@ module.exports = {
     const orders = await db.Order.find({}).populate("user", "id name");
     res.json(orders);
   },
+  updateOrderToDelivered: async function (req, res) {
+    const order = await db.Order.findById(req.params.id);
+
+    if (order) {
+      (order.isDelivered = true), (order.deliveredAt = Date.now());
+
+      const updatedOrder = await order.save();
+      res.json(updatedOrder);
+    } else {
+      res.status(404).json({ message: "Order not found." });
+    }
+  },
 };

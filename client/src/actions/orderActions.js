@@ -16,6 +16,10 @@ import {
   ADMIN_ORDER_LIST_REQUEST,
   ADMIN_ORDER_LIST_SUCCESS,
   ADMIN_ORDER_LIST_FAIL,
+  ORDER_DELIVERED_REQUEST,
+  ORDER_DELIVERED_SUCCESS,
+  ORDER_DELIVERED_FAIL,
+  ORDER_DELIVERED_RESET,
 } from "../action_types/orderTypes";
 
 export const createOrder = (order) => async (dispatch, getState) => {
@@ -186,4 +190,39 @@ export const adminListOrders = () => async (dispatch, getState) => {
           : error.message,
     });
   }
+};
+
+export const deliverOrder = (order) => async (dispatch, getState) => {
+  try {
+    dispatch({ type: ORDER_DELIVERED_REQUEST });
+
+    const {
+      userLogin: { userInfo },
+    } = getState();
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    };
+
+    const res = await axios.put(`/api/orders/${order._id}/deliver`, {}, config);
+
+    dispatch({
+      type: ORDER_DELIVERED_SUCCESS,
+      payload: res.data,
+    });
+  } catch (error) {
+    dispatch({
+      type: ORDER_DELIVERED_FAIL,
+      payload:
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message,
+    });
+  }
+};
+
+export const deliverOrderReset = () => (dispatch) => {
+  dispatch({ type: ORDER_DELIVERED_RESET });
 };

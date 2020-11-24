@@ -15,4 +15,9 @@ router.route("/:id").get(protect, orderController.getOrderById);
 // Matches with "/api/orders/:id/pay" - PROTECTED ROUTE
 router.route("/:id/pay").put(protect, orderController.updateOrderToPaid);
 
+// Matches with "/api/orders/:id/deliver" - PROTECTED ROUTE
+router
+  .route("/:id/deliver")
+  .put(protect, admin, orderController.updateOrderToDelivered);
+
 module.exports = router;
