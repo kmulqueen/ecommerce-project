@@ -11,4 +11,7 @@ router.route("/:id").get(productController.findById);
 router.route("/:id").put(protect, admin, productController.updateProduct);
 router.route("/:id").delete(protect, admin, productController.deleteById);
 
+// Matches with "/api/products/:id/reviews"
+router.route("/:id/reviews").post(protect, productController.createNewReview);
+
 module.exports = router;
