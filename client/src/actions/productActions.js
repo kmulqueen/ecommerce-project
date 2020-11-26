@@ -23,12 +23,12 @@ import {
   PRODUCT_CREATE_REVIEW_RESET,
 } from "../action_types/productTypes";
 
-export const listProducts = () => async (dispatch) => {
+export const listProducts = (keyword = "") => async (dispatch) => {
   try {
     // Dispatch request for products
     dispatch({ type: PRODUCT_LIST_REQUEST });
     // Make API Call
-    const res = await axios.get("/api/products");
+    const res = await axios.get(`/api/products?keyword=${keyword}`);
     // Dispatch success if products found
     dispatch({ type: PRODUCT_LIST_SUCCESS, payload: res.data });
   } catch (error) {

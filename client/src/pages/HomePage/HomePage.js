@@ -6,13 +6,16 @@ import Message from "../../components/Message";
 import Splash from "../../components/Splash";
 import { Row, Col } from "react-bootstrap";
 
-const HomePage = () => {
+const HomePage = ({ match }) => {
   const dispatch = useDispatch();
   const productList = useSelector((state) => state.productList);
   const { loading, error, products } = productList;
+
+  const keyword = match.params.keyword;
+
   useEffect(() => {
-    dispatch(listProducts());
-  }, [dispatch]);
+    dispatch(listProducts(keyword));
+  }, [dispatch, keyword]);
 
   return (
     <>

@@ -3,7 +3,20 @@ const db = require("../models");
 module.exports = {
   findAll: async function (req, res) {
     try {
-      const products = await db.Product.find({});
+      // Check for keyword query
+      const keyword = req.query.keyword
+        ? {
+            // Check for product names that match/contain the query. Case insensitive
+            name: {
+              $regex: req.query.keyword,
+              $options: "i",
+            },
+            // If no query return empty object
+          }
+        : {};
+
+      // Find all products or find all products with query search
+      const products = await db.Product.find({ ...keyword });
       res.json(products);
     } catch (error) {
       res.status(422).json(error);
