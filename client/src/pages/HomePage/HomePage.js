@@ -4,18 +4,23 @@ import { listProducts } from "../../actions/productActions";
 import Product from "../../components/Product";
 import Message from "../../components/Message";
 import Splash from "../../components/Splash";
+import Paginate from "../../components/Paginate";
 import { Row, Col } from "react-bootstrap";
 
 const HomePage = ({ match }) => {
   const dispatch = useDispatch();
   const productList = useSelector((state) => state.productList);
-  const { loading, error, products } = productList;
+  const { loading, error, products, page, pages } = productList;
 
+  // Check for keyword query
   const keyword = match.params.keyword;
+  // Check for pageNumber query. Default to 1 if not found
+  const pageNumber = match.params.pageNumber || 1;
 
   useEffect(() => {
-    dispatch(listProducts(keyword));
-  }, [dispatch, keyword]);
+    // Lists all products or products that match keyword search
+    dispatch(listProducts(keyword, pageNumber));
+  }, [dispatch, keyword, pageNumber]);
 
   return (
     <>
@@ -25,13 +30,20 @@ const HomePage = ({ match }) => {
       ) : error ? (
         <Message variant="danger">{error}</Message>
       ) : (
-        <Row>
-          {products.map((product, i) => (
-            <Col sm={12} md={6} lg={4} xl={3} key={i}>
-              <Product product={product} />
-            </Col>
-          ))}
-        </Row>
+        <>
+          <Row>
+            {products.map((product, i) => (
+              <Col sm={12} md={6} lg={4} xl={3} key={i}>
+                <Product product={product} />
+              </Col>
+            ))}
+          </Row>
+          <Paginate
+            pages={pages}
+            page={page}
+            keyword={keyword ? keyword : ""}
+          />
+        </>
       )}
     </>
   );

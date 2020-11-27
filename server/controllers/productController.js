@@ -3,6 +3,11 @@ const db = require("../models");
 module.exports = {
   findAll: async function (req, res) {
     try {
+      // Define # of products per page to be shown
+      const pageSize = 10;
+      // Get page # from query. Default to 1 if query doesn't exist
+      const page = Number(req.query.pageNumber) || 1;
+
       // Check for keyword query
       const keyword = req.query.keyword
         ? {
@@ -15,9 +20,15 @@ module.exports = {
           }
         : {};
 
+      // Get total count of products
+      const count = await db.Product.countDocuments({ ...keyword });
       // Find all products or find all products with query search
-      const products = await db.Product.find({ ...keyword });
-      res.json(products);
+      const products = await db.Product.find({ ...keyword })
+        // Limit number of products returned
+        .limit(pageSize)
+        // Display correct products on each page
+        .skip(pageSize * (page - 1));
+      res.json({ products, page, pages: Math.ceil(count / pageSize) });
     } catch (error) {
       res.status(422).json(error);
     }
