@@ -5,6 +5,7 @@ import Product from "../../components/Product";
 import Message from "../../components/Message";
 import Splash from "../../components/Splash";
 import Paginate from "../../components/Paginate";
+import ProductCarousel from "../../components/ProductCarousel";
 import { Row, Col } from "react-bootstrap";
 
 const HomePage = ({ match }) => {
@@ -24,6 +25,8 @@ const HomePage = ({ match }) => {
 
   return (
     <>
+      {/* If no search query, show product carousel */}
+      {!keyword && <ProductCarousel />}
       <h1>Latest Products</h1>
       {loading ? (
         <Splash />

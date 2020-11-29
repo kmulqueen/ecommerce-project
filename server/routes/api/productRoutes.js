@@ -6,6 +6,9 @@ const { admin, protect } = require("../../middleware/authMiddleware");
 router.route("/").get(productController.findAll);
 router.route("/").post(protect, admin, productController.createProduct);
 
+// Matches with "/api/products/top"
+router.route("/top").get(productController.getTopProducts);
+
 // Matches with "/api/products/:id"
 router.route("/:id").get(productController.findById);
 router.route("/:id").put(protect, admin, productController.updateProduct);

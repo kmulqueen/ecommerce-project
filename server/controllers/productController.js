@@ -1,3 +1,4 @@
+const { Product } = require("../models");
 const db = require("../models");
 
 module.exports = {
@@ -134,6 +135,15 @@ module.exports = {
       }
     } else {
       res.status(404).json({ message: "Product not found." });
+    }
+  },
+  getTopProducts: async function (req, res) {
+    try {
+      // Find all products and sort by rating in ascending order. Limit to 3
+      const products = await db.Product.find({}).sort({ rating: -1 }).limit(3);
+      res.json(products);
+    } catch (error) {
+      res.status(422).json(error);
     }
   },
 };
