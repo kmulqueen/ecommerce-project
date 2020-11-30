@@ -18,6 +18,7 @@ import {
 import Rating from "../../components/Rating";
 import Splash from "../../components/Splash";
 import Message from "../../components/Message";
+import Meta from "../../components/Meta";
 
 const ProductPage = ({ match, history }) => {
   // State for adjusting quantity of product to add to cart
@@ -74,6 +75,7 @@ const ProductPage = ({ match, history }) => {
         <Message variant="danger">{error}</Message>
       ) : (
         <>
+          <Meta title={product.name} description={product.description} />
           <Row>
             <Col md={6}>
               <Image src={product.image} alt={product.name} fluid />
