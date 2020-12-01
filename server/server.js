@@ -4,6 +4,7 @@ const connectDB = require("./config/db");
 const routes = require("./routes");
 const middleware = require("./middleware/errorMiddleware");
 const morgan = require("morgan");
+const path = require("path");
 
 // Initialize env, app, and DB connection
 dotenv.config();
@@ -23,6 +24,17 @@ app.use(routes);
 
 // Add uploads folder as static folder
 app.use("/uploads", express.static("uploads"));
+
+// In production set client to static folder
+if (process.env.NODE_ENV === "production") {
+  const __dirname = path.resolve();
+  app.use(express.static(path.join(__dirname, "/client/build")));
+
+  // Any route that is not an api route points to the index.html file in the static build folder
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
+  });
+}
 
 // Add error handling middleware
 app.use(middleware.notFound);
